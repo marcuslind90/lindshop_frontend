@@ -1,0 +1,12 @@
+{% load i18n %}
+<h2>{% trans "Extra Information" %}</h2>
+<div class="alert alert-danger personal-error" style="display:none;"></div>
+<div class="form-group">
+	<div class="row">
+		{% for field in custom_fields %}
+		<div class="col-xs-6">
+			<input type="text" name="{{field.slug}}" class="form-control input-lg" placeholder="{{field.label}}" value="" {% if field.mandatory %}required{% endif %}>
+		</div>
+		{% endfor %}
+	</div>
+</div>

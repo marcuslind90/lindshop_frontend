@@ -1,5 +1,5 @@
 from django.conf.urls import include, url
-from lindshop import views
+import lindshop_frontend.views as views
 from lindshop.core.product.views import product
 from lindshop.core.category.views import category
 from lindshop.core.cart.views import ajax_cart

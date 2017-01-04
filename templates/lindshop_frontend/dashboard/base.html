@@ -1,0 +1,134 @@
+{% load staticfiles %}
+{% load product_tags %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="icon" href="../../favicon.ico">
+
+	<title>Dashboard for Lindshop</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="{% static "lindshop/css/bootstrap.css" %}" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="{% static 'lindshop/css/font-awesome.min.css' %}" />
+	<!-- Custom styles for this template -->
+	<link href="{% static "lindshop/css/dashboard.css" %}" rel="stylesheet">
+
+
+
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+	  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+	  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<![endif]-->
+  </head>
+
+  <body ng-app="dashboard" ng-controller="mainCtrl">
+	<div class="container-fluid">
+	  <div class="row">
+		<div class="sidebar">
+		  <ul class="nav nav-sidebar" auto-active>
+			<li {% if request.get_full_path == "#/orders/" %}class="active"{% endif %}>
+				<a href="#/orders/" data-toggle="tooltip" data-placement="right" title="{% trans "Orders" %}"><i class="fa fa-2x fa-shopping-cart"></i></a>
+			</li>
+			<li {% if request.get_full_path == url %}class="active"{% endif %}>
+				<a href="#/catalogue/" data-toggle="tooltip" data-placement="right" title="{% trans "Catalogue" %}"><i class="fa fa-2x fa-book"></i></a>
+			</li>
+			<li {% if request.get_full_path == url %}class="active"{% endif %}>
+				<a href="#/users/" data-toggle="tooltip" data-placement="right" title="{% trans "Users" %}"><i class="fa fa-2x fa-users"></i></a>
+			</li>
+			<li {% if request.get_full_path == url %}class="active"{% endif %}>
+				<a href="#/payment/" data-toggle="tooltip" data-placement="right" title="{% trans "Payment" %}"><i class="fa fa-2x fa-money"></i></a>
+			</li>
+			<li {% if request.get_full_path == url %}class="active"{% endif %}>
+				<a href="#/shipping/" data-toggle="tooltip" data-placement="right" title="{% trans "Shipping" %}"><i class="fa fa-2x fa-truck"></i></a>
+			</li>
+			<li {% if request.get_full_path == url %}class="active"{% endif %}>
+				<a href="#/stock/" data-toggle="tooltip" data-placement="right" title="{% trans "Warehouses" %}"><i class="fa fa-2x fa-industry"></i></a>
+			</li>
+			<li {% if request.get_full_path == url %}class="active"{% endif %}>
+				<a href="#/localization/" data-toggle="tooltip" data-placement="right" title="{% trans "Localization" %}"><i class="fa fa-2x fa-globe"></i></a>
+			</li>
+			<li {% if request.get_full_path == url %}class="active"{% endif %}>
+				<a href="#/appearance/" data-toggle="tooltip" data-placement="right" title="{% trans "Appearance" %}"><i class="fa fa-2x fa-paint-brush"></i></a>
+			</li>
+		  	{% url "shop:dashboard:logout" as url %}
+			<li id="settings">
+				<a href="{{url}}" data-toggle="tooltip" data-placement="right" title="{% trans "Settings" %}"><i class="fa fa-2x fa-cog"></i></a>
+			</li>
+		  	{% url "shop:dashboard:logout" as url %}
+			<li id="logout">
+				<a href="{{url}}" data-toggle="tooltip" data-placement="right" title="{% trans "Logout" %}"><i class="fa fa-2x fa-power-off"></i></a>
+			</li>
+		  </ul>
+		</div>
+		<div class="col-sm-12 main">
+			<div ng-view></div>
+		</div>
+	  </div>
+	</div>
+
+	<script>
+		var csrf = "{{csrf_token}}";
+		var static_root = "{{STATIC_URL}}";
+		var templates = {
+			'order-list': '{% static 'lindshop/dashboard/js/angular/templates/order-list.html' %}', 
+			'order-single': '{% static 'lindshop/dashboard/js/angular/templates/order-single.html' %}', 
+			'catalogue': '{% static 'lindshop/dashboard/js/angular/templates/catalogue.html' %}', 
+			'product-single': '{% static 'lindshop/dashboard/js/angular/templates/product-single.html' %}', 
+			'category-single': '{% static 'lindshop/dashboard/js/angular/templates/category-single.html' %}', 
+			'appearance': '{% static 'lindshop/dashboard/js/angular/templates/appearance.html' %}', 
+			'menu': '{% static 'lindshop/dashboard/js/angular/templates/menu.html' %}', 
+			'slideshow': '{% static 'lindshop/dashboard/js/angular/templates/slideshow.html' %}', 
+			'payment': '{% static 'lindshop/dashboard/js/angular/templates/payment.html' %}', 
+			'currency': '{% static 'lindshop/dashboard/js/angular/templates/currency.html' %}', 
+			'taxrule': '{% static 'lindshop/dashboard/js/angular/templates/taxrule.html' %}', 
+			'voucher': '{% static 'lindshop/dashboard/js/angular/templates/voucher.html' %}', 
+			'localization': '{% static 'lindshop/dashboard/js/angular/templates/localization.html' %}', 
+			'country': '{% static 'lindshop/dashboard/js/angular/templates/country.html' %}', 
+			'shipping': '{% static 'lindshop/dashboard/js/angular/templates/shipping.html' %}', 
+			'carrier': '{% static 'lindshop/dashboard/js/angular/templates/carrier.html' %}', 
+			'stock': '{% static 'lindshop/dashboard/js/angular/templates/stock.html' %}', 
+			'warehouse': '{% static 'lindshop/dashboard/js/angular/templates/warehouse.html' %}', 
+			'user-list': '{% static 'lindshop/dashboard/js/angular/templates/user-list.html' %}', 
+			'user-detail': '{% static 'lindshop/dashboard/js/angular/templates/user-detail.html' %}'
+		};
+	</script>
+	{% block js_nocompress %}{% endblock %}
+	<!-- Bootstrap core JavaScript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript" src="{% static 'lindshop/js/jquery.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/js/bootstrap.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/angular.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/angular-route.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/angular-animate.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/checklist-model.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/app.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/controllers/mainctrl.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/controllers/orderctrl.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/controllers/cataloguectrl.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/controllers/appearancectrl.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/controllers/paymentctrl.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/controllers/localizationctrl.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/controllers/shippingctrl.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/controllers/stockctrl.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/angular/controllers/userctrl.js' %}"></script>
+	<script type="text/javascript" src="{% static 'lindshop/dashboard/js/dashboard.js' %}"></script>
+	<script>
+	// Add the CSRF Token
+	var app = angular.module('dashboard'); // Not including a list of dependent modules (2nd parameter to `module`) "re-opens" the module for additional configuration
+	app.config(['$httpProvider', function($httpProvider) {
+	    $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token|escapejs }}';
+	}]);
+	</script>
+	{% block js_compress %}{% endblock %}
+  </body>
+</html>
