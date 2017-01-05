@@ -1,3 +1,5 @@
+var cart = $('.cart-dropdown ul .cart-content');
+
 $('form#add-product').on('submit', function(e){
 	e.preventDefault();
 
@@ -18,16 +20,36 @@ $('form#add-product').on('submit', function(e){
 
 		// When we've successfully added the item to the cart, lets fetch 
 		// an updated HTML for the Cart Dropdown.
-		Lindshop.getCartHtml(1, function(response) {
-			$('.cart-dropdown ul .cart-content').html(response.html);
+		updateCart();
 
-			if(response.product_count > 0){
-				$('.dropdown-toggle .badge').text(response.product_count).show();
-			}
-			else {
-				$('.dropdown-toggle .badge').text("0").hide()
-			}
-		});
+	});
+});
 
+var updateCart = function() {
+	Lindshop.getCartHtml(1, function(response) {
+		cart.html(response.html);
+
+		if(response.product_count > 0){
+			$('.dropdown-toggle .badge').text(response.product_count).show();
+		}
+		else {
+			$('.dropdown-toggle .badge').text("0").hide()
+		}
+	});
+}
+
+cart.delegate('input[name="amount"]', 'change', function(e){
+	e.preventDefault();
+	var container = $(this).parents('.dropdown-product');
+	Lindshop.updateItemQuantity({id_item: container.data('id'), amount: $(this).val()}, function(response) {
+		updateCart();
+	});
+});
+
+cart.delegate('a[name="remove"]', 'click', function(e){
+	e.preventDefault();
+	var container = $(this).parents('.dropdown-product');
+	Lindshop.deleteItem(container.data('id'), function(response) {
+		updateCart();
 	});
 });
