@@ -8,6 +8,8 @@ $('form#add-product').on('submit', function(e){
 	var quantity = 1;
 	var attributes = [];
 
+	// For each attribute there is in the Add Product form, combine
+	// them to a list.
 	$('.product-attributes select').each(function(index, element){
 		var temp_arr = {};
 		temp_arr['attribute'] = $(this).attr('name');
@@ -25,6 +27,57 @@ $('form#add-product').on('submit', function(e){
 	});
 });
 
+// Handles the add voucher button in the Checkout. Whenever the Add Voucher button 
+// is clicked, it sends the value to the backend and it validates that the voucher is
+// valid, and then adds it to the cart. Also updates the Cart Summary on the Checkout
+// with updated price and information.
+$('.voucher-box .voucher-field button[name="add"]').click(function(e){
+	e.preventDefault();
+	Lindshop.addVoucher(
+		$('input[name="voucher"]').val(), 
+		// Success callback
+		function(response){
+			$('.voucher-danger').hide();
+			$('input[name="voucher"]').val("");
+
+			updateCart();
+		}, 
+		// Error callback
+		function(response) {
+			$('.voucher-danger').text(JSON.parse(response.responseText)).show();
+		}
+	);
+});
+
+// Handles any updates to the amount input inside the cart. Whenever the
+// value is changed, we update the item quantity on the server and refresh the cart, 
+// which will also update the price with the new amount taken into account.
+// The reason we use `delegate` is because the input will be reloaded into the DOM
+// every time we update the cart.
+cart.delegate('input[name="amount"]', 'change', function(e){
+	e.preventDefault();
+	var container = $(this).parents('.dropdown-product');
+	Lindshop.updateItemQuantity({id_item: container.data('id'), amount: $(this).val()}, function(response) {
+		updateCart();
+	});
+});
+
+// Handles the trash/remove link in the cart dropdown for each cart item. Whenever
+// the remove link is clicked, we remove the item from the cart on the server and 
+// refresh the cart. The reason we use `delegate` is because the remove link will be
+// reloaded into the DOM every time we update the cart.
+cart.delegate('a[name="remove"]', 'click', function(e){
+	e.preventDefault();
+	var container = $(this).parents('.dropdown-product');
+	Lindshop.deleteItem(container.data('id'), function(response) {
+		updateCart();
+	});
+});
+
+// Handle refresh of the cart. Gets the new HTML from the server
+// that contains all cart products, update badge with amount of numbers.
+// Here you can also do things such as adding Spinners, Loaders or other custom
+// events whenever your cart gets refreshed.
 var updateCart = function() {
 	Lindshop.getCartHtml(1, function(response) {
 		cart.html(response.html);
@@ -37,19 +90,3 @@ var updateCart = function() {
 		}
 	});
 }
-
-cart.delegate('input[name="amount"]', 'change', function(e){
-	e.preventDefault();
-	var container = $(this).parents('.dropdown-product');
-	Lindshop.updateItemQuantity({id_item: container.data('id'), amount: $(this).val()}, function(response) {
-		updateCart();
-	});
-});
-
-cart.delegate('a[name="remove"]', 'click', function(e){
-	e.preventDefault();
-	var container = $(this).parents('.dropdown-product');
-	Lindshop.deleteItem(container.data('id'), function(response) {
-		updateCart();
-	});
-});
