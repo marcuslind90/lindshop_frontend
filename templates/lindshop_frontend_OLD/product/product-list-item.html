@@ -13,6 +13,6 @@
 		<span class="price">{% format_price product.get_price %}</span>
 	</a>
 	{% if config.category_add_to_cart %}
-	<button class="btn btn-primary" name="add-product" data-id="{{product.pk}}"><i class="fa fa-shopping-cart"></i> {% trans "Buy" %}</button>
+	<button class="btn btn-warning" name="add-product" data-id="{{product.pk}}"><i class="fa fa-shopping-cart"></i> {% trans "Buy" %}</button>
 	{% endif %}
 </div>

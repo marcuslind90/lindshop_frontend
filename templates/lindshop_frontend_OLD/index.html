@@ -1,6 +1,14 @@
 {% extends "lindshop_frontend/base.html" %}
 {% load staticfiles %}
 {% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block css_sheets %}{% endblock %}
+
+{% block navbar %}
+	{% include "lindshop_frontend/cart-dropdown.html" %}
+{% endblock %}
+
 {% block content %}
 	<div class="page-header firstheader text-center">
 		<h2>{% trans "Popular products" %}</h2>
@@ -15,4 +23,15 @@
 		{% endfor %}
 	</div>
 
+{% endblock %}
+
+{% block footer %}
+{% include "lindshop_frontend/cart-modal.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+	var get_lang = "{{LANGUAGE_CODE}}";
+	var csrf = "{{csrf_token}}";
+</script>
 {% endblock %}

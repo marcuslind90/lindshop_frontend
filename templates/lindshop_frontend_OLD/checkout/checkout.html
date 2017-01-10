@@ -7,12 +7,12 @@
 
 {% block navbar %}
 	{% if config.cart_display_top %}
-		{% include "lindshop/cart-dropdown.html" %}
+		{% include "lindshop_frontend/cart-dropdown.html" %}
 	{% endif %}
 {% endblock %}
 
 {% block title %}
-	{% trans "Checkout And Complete Your Dog Box Subscription | Tailbay" %}
+	{% trans "Checkout" %}
 {% endblock %}
 
 {% block content %}
@@ -23,7 +23,7 @@
 		{% if cart_items %}
 			<ul class="checkout-cart-list">
 			{% for item in cart_items %}
-				{% include "lindshop/cart-dropdown-item.html" with item=item %}	
+				{% include "lindshop_frontend/cart-dropdown-item.html" with item=item %}	
 			{% endfor %}
 			</ul>
 		{% endif %}
@@ -56,12 +56,10 @@
 
 		<div class="voucher-box">
 			<div class="btn-box">
-				<div class="voucher-field" style="display: none;">
+				<div class="voucher-field">
 					<input type="text" name="voucher" class="form-control input-lg" placeholder="{% trans "Your voucher code" %}">
-					<button class="btn btn-primary" name="add" style="display: none">{% trans "Add" %}</button>
-					<button class="btn btn-default" name="close">{% trans "Close" %}</button>
+					<button class="btn btn-primary" name="add">{% trans "Add" %}</button>
 				</div>
-				<button class="btn btn-default btn-voucher">{% trans "Add Voucher" %}</button>
 			</div>
 			<div class="alert alert-danger voucher-danger" style="display: none;"></div>
 			<div class="alert alert-success voucher-success" style="display: none;"></div>
@@ -160,14 +158,9 @@
 {% include "lindshop/cart-modal.html" %}
 {% endblock %}
 
-{% block css_sheets %}
-<link rel="stylesheet" type="text/css" href="{% static 'lindshop/css/checkout.css' %}" />
-{% endblock %}
-
 {% block scripts %}
 <script>
 	var get_lang = "{{LANGUAGE_CODE}}";
-	var csrf = "{{csrf_token}}";
 </script>
 {% for key, payment in payments.items reversed %}
 	{% for payment_js in payment.js %}

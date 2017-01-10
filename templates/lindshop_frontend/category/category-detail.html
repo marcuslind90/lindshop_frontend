@@ -1,0 +1,16 @@
+{% extends "lindshop_frontend/base-left-menu.html" %}
+{% load i18n %}
+
+{% block right-content %}
+{% include "lindshop_frontend/breadcrumbs.html" %}
+<div class="row">
+	<div class="col-sm-12">
+		<div class="page-header">
+			<h1>{{category.name}}</h1>
+		</div>
+		{% for product in category.product_categories.all %}
+		{% include "lindshop_frontend/product/product-list-item.html" with product=product %}
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

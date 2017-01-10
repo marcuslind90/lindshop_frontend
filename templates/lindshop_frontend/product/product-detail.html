@@ -1,0 +1,94 @@
+{% extends "lindshop_frontend/base-left-menu.html" %}
+{% load i18n %}
+{% load thumbnail %}
+{% load product_tags %}
+
+{% block title %}
+{{product.title}}
+{% endblock %}
+
+{% block right-content %}
+{% include "lindshop_frontend/breadcrumbs.html" %}
+<div class="row">
+	<div class="col-sm-6">
+		<div class="product-images">
+			<a href="{{product.get_featured.image.url}}" data-lightbox="main-image"><img src="{{product.get_featured.image.url}}" class="img-responsive"></a>
+			<div class="row product-thumbnails">
+				{% for image in product.productimage_set.all %}
+				<div class="col-sm-3">
+					{% thumbnail image.image config.product_gallery_thumbnail_size crop="center" as im %}
+					<a href="{{image.image.url}}" data-lightbox="product-images">
+						<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" class="img-responsive img-thumbnail">
+					</a>
+					{% endthumbnail %}
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="page-header first-header">
+			<h1>{{product.name}}</h1>
+		</div>
+		<p>{{product.short_description|linebreaks}}</p>
+
+		{% if product.productdata_set.all|length > 0 %}
+		<label>Information about the product</label>
+		<table class="table">
+			{% for data in product.productdata_set.all %}
+			<tr>
+				<td>{{data.label}}</td>
+				<td>{{data.value}}</td>
+			</tr>
+			{% endfor %}
+		</table>
+		{% endif %}
+
+		<form method="post" action="" id="add-product">
+			{% csrf_token %}
+			{% if product.attribute_set.all %}
+			<div class="product-attributes">
+				{% for attribute in product.attribute_set.all %}
+				<div class="form-group">
+					<select name="attribute-{{attribute.slug}}" class="form-control">
+						{% for choice in attribute.attributechoice_set.all %}
+						<option value="{{choice.slug}}">{{choice.value}}</option>
+						{% endfor %}
+					</select>
+				</div>
+				{% endfor %}
+			</div>
+			{% endif %}
+
+			<p class="price">{% format_price product.get_price %}</p>
+			
+			<input type="hidden" name="id_product" value="{{product.pk}}">
+			<input type="hidden" name="action" value="add-product">
+
+			<button class="btn btn-primary btn-lg" type="submit">
+				<i class="fa fa-shopping-cart"></i> {% trans "Add to cart" %}
+			</button>
+
+		</form>
+	</div>
+</div>
+<div class="row tabs-container">
+	<div class="col-xs-12">
+
+		<!-- Nav tabs -->
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active">
+				<a href="#description" aria-controls="description" role="tab" data-toggle="tab">{% trans "Description" %}</a>
+			</li>
+		</ul>
+
+		<!-- Tab panes -->
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="description">
+				<p>{{product.description|linebreaks}}</p>
+			</div>
+		</div>
+
+	</div>
+</div>
+{% endblock %}

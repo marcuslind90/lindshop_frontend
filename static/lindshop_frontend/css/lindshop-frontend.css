@@ -1,0 +1,37 @@
+body {
+	padding-top: 10px;
+}
+.cart-dropdown .dropdown-menu {
+	margin-top: 0;
+	width: 380px;
+}
+.dropdown .btn.dropdown-toggle:hover + .dropdown-menu, .dropdown a.dropdown-toggle:hover + .dropdown-menu, .dropdown-menu:hover{
+	display: block !important;
+}
+.dropdown-menu li.dropdown-product {
+	overflow: hidden;
+	border-bottom: 1px solid #e5e5e5;
+	margin-bottom: 5px;
+	padding-bottom: 5px;
+}
+.row.nomargin {
+	margin-left: 0;
+	margin-right: 0;
+}
+.dropdown-product .input-sm {
+	width: 70%;
+	float: left;
+}
+.dropdown-product .remove-product {
+	float: right;
+	margin: 4px 0;
+}
+
+.col-small-padding {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.center {
+	margin: 0 auto;
+}

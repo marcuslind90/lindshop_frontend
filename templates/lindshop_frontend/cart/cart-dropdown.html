@@ -1,6 +1,6 @@
 {% load i18n %}
 {% load product_tags %}
-<div class="btn-group dropdown cart-dropdown">
+<div class="btn-group dropdown cart-dropdown pull-right">
 	<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
 		{% if cart_items|length > 0 %}
 		<span class="badge">{{cart_items|length}}</span>
@@ -13,20 +13,26 @@
 	<ul class="dropdown-menu dropdown-menu-left" role="menu" aria-labelledby="dropdownMenu1">
 		<li class="dropdown-header">
 			<div class="row">
-				<div class="col-xs-6 col-small-padding">{% trans "Product" %}</div>
-				<div class="col-xs-3 col-small-padding">{% trans "Amount" %}</div>
+				<div class="col-xs-7 col-small-padding">{% trans "Product" %}</div>
+				<div class="col-xs-2 col-small-padding">{% trans "Amount" %}</div>
 				<div class="col-xs-3 text-right col-small-padding">{% trans "Price" %}</div>
 			</div>
 		</li>
-		<li class="empty-cart" {% if not cart_items %}style="display: list-item;"{% endif %}><div class="alert alert-warning">{% trans "Your cart is empty!" %}</div></li>
+		<li class="empty-cart" style="{% if not cart_items %}display: list-item;{% else %}display: none;{% endif %}">
+			<div class="alert alert-warning">{% trans "Your cart is empty!" %}</div>
+		</li>
 		<div class="cart-content">
-		{% include "lindshop/cart/cart-content.html" %}
+		{% include "lindshop_frontend/cart/cart-content.html" %}
 		</div>
-		<li class="btn-menu">
-			<div class="btn-group">
-				<a class="btn btn-lg btn-success" href="{% url "shop:checkout" %}" id="checkout-link"><i class="fa fa-shopping-cart" style="margin-right: 3px;"></i> {% trans "Go to Checkout" %}</a>
+		<li>
+			<div class="text-center">
+				<a class="btn btn-lg btn-primary" href="{% url "shop:checkout" %}" id="checkout-link">
+					<i class="fa fa-shopping-cart"></i> {% trans "Go to Checkout" %}
+				</a>
 			</div>
 		</li>
 		<i class="fa fa-spinner fa-spin" style="display: none"></i>
 	</ul>
+
+
 </div>

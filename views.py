@@ -6,10 +6,10 @@ class HomeView(lindshop.views.HomeView):
 	template_name = "lindshop_frontend/index.html"
 
 class CategoryList(lindshop.views.CategoryList):
-	template_name = "lindshop_frontend/category/category-single.html"
+	template_name = "lindshop_frontend/category/category-detail.html"
 
 class ProductDetail(lindshop.views.ProductDetail):
-	template_name = "lindshop_frontend/product/product-single.html"
+	template_name = "lindshop_frontend/product/product-detail.html"
 
 class CartSummary(lindshop.views.CartSummary):
 	template_name = "lindshop_frontend/checkout/summary.html"
