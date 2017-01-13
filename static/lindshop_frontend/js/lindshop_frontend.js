@@ -1,4 +1,5 @@
 var cart = $('.cart-dropdown ul .cart-content');
+var cart_summary = $('.cart-summary-content');
 
 $('form#add-product').on('submit', function(e){
 	e.preventDefault();
@@ -54,25 +55,39 @@ $('.voucher-box .voucher-field button[name="add"]').click(function(e){
 // which will also update the price with the new amount taken into account.
 // The reason we use `delegate` is because the input will be reloaded into the DOM
 // every time we update the cart.
-cart.delegate('input[name="amount"]', 'change', function(e){
+cart.delegate('input[name="amount"]', 'change', function(e){changeAmount(this, e);});
+cart_summary.delegate('input[name="amount"]', 'change', function(e){changeAmount(this, e);});
+var changeAmount = function(selector, e) {
 	e.preventDefault();
-	var container = $(this).parents('.dropdown-product');
-	Lindshop.updateItemQuantity({id_item: container.data('id'), amount: $(this).val()}, function(response) {
-		updateCart();
-	});
-});
+	var container = $(selector).parents('.dropdown-product');
 
-// Handles the trash/remove link in the cart dropdown for each cart item. Whenever
+	Lindshop.updateItemQuantity({id_item: container.data('id'), amount: $(selector).val()}, function(response) {
+		updateCart();
+		// If cart_summary exist on this page, update it as well.
+		if(cart_summary.length > 0) {
+			updateCartSummary();
+		}
+	});
+}
+
+// Handles the trash/remove link in the cart for each cart item. Whenever
 // the remove link is clicked, we remove the item from the cart on the server and 
 // refresh the cart. The reason we use `delegate` is because the remove link will be
 // reloaded into the DOM every time we update the cart.
-cart.delegate('a[name="remove"]', 'click', function(e){
+cart.delegate('a[name="remove"]', 'click', function(e){clickRemove(this, e);});
+cart_summary.delegate('a[name="remove"]', 'click', function(e){clickRemove(this, e);});
+var clickRemove = function(selector, e) {
 	e.preventDefault();
-	var container = $(this).parents('.dropdown-product');
+	var container = $(selector).parents('.dropdown-product');
+
 	Lindshop.deleteItem(container.data('id'), function(response) {
 		updateCart();
+		// If cart_summary exist on this page, update it as well.
+		if(cart_summary.length > 0) {
+			updateCartSummary();
+		}
 	});
-});
+}
 
 // Handle refresh of the cart. Gets the new HTML from the server
 // that contains all cart products, update badge with amount of numbers.
@@ -88,5 +103,11 @@ var updateCart = function() {
 		else {
 			$('.dropdown-toggle .badge').text("0").hide()
 		}
+	});
+}
+
+var updateCartSummary = function() {
+	Lindshop.getCartSummaryHtml(1, function(response) {
+		cart_summary.html(response.html);
 	});
 }

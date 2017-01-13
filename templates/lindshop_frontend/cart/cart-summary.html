@@ -1,0 +1,40 @@
+{% load i18n %}
+{% load product_tags %}
+
+{% for item in cart.cartitem_set.all %}
+<div class="row dropdown-product" data-id="{{item.pk}}">
+	<div class="col-xs-4 col-sm-1">
+		<img src="{{item.product.get_featured.image.url}}" alt="{{item.product.get_featured.image.alt}}" class="img-responsive">
+	</div>
+	<div class="col-xs-8 col-sm-6">
+		<span class="h3">
+			{{item.product.name}}
+		</span>
+		{% if item.attribute.all %}
+		<p>
+			<i>
+			{% for attribute in item.attribute.all %}{% if forloop.counter > 1 %}, {% endif %}{{attribute.value}}{% endfor %}
+			</i> |  
+
+			<a href="#">{{item.product.category.name}}</a>
+		</p>
+		{% endif %}
+	</div>
+	<div class="col-sm-2 hidden-xs">
+		<span>{% format_price item.get_product_price %}/{% trans "unit" %}</span>
+	</div>
+	<div class="col-xs-4 col-sm-2">
+		<div class="row">
+			<div class="col-xs-6">
+				<input type="number" name="amount" class="form-control input-sm" value="{{item.amount}}">
+			</div>
+			<div class="col-xs-6 text-center">
+				<a href="#" name="remove"><i class="fa fa-trash"></i></a>
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-4 col-sm-1">
+		<span>{% format_price item.get_total %}</span>
+	</div>
+</div>
+{% endfor %}
