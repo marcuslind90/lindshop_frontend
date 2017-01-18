@@ -1,26 +1,181 @@
 {% extends "lindshop_frontend/base.html" %}
 {% load staticfiles %}
 {% load i18n %}
+{% load product_tags %}
 
 {% block content %}
 <div class="page-header">
-	<h1>{% trans "Cart Summary" %}</h1>
+	<h1>{% trans "Checkout" %}</h1>
 </div>
 
-<div class="cart-summary-content">
-{% include "lindshop_frontend/cart/cart-summary.html" with cart_items=cart_items %}
-</div>
 
 <div class="row">
-	<div class="col-sm-offset-8 col-sm-4">
-		<div class="input-group">
-			<input type="text" name="voucher" placeholder="{% trans "Gift Card or Voucher" %}" class="form-control">
-			<span class="input-group-btn">
-				<button class="btn btn-default">{% trans "Add" %}</button>
-			</span>
-		</div>
+	{% with cart.user.user_address.all.0 as address %}
+	<div class="page-header">
+		<h2>{% trans "Personal Information" %}</h2>
 	</div>
+	<form method="post" action="">
+		{% csrf_token %}
+		<div class="form-group">
+			<input type="email" name="email" class="form-control" placeholder="{% trans "Email" %}" value="{{cart.user.email}}">
+		</div>
+		<div class="form-group">
+			<div class="row">
+				<div class="col-xs-6">
+					<input type="text" name="first_name" class="form-control" placeholder="{% trans "First name" %}" value="{{cart.user.first_name}}">
+				</div>
+				<div class="col-xs-6">
+					<input type="text" name="last_name" class="form-control" placeholder="{% trans "Last name" %}" value="{{cart.user.last_name}}">
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="row">
+				<div class="col-xs-6">
+					<input type="text" name="address" class="form-control" placeholder="{% trans "Address" %}" value="{{address.address}}">
+				</div>
+				<div class="col-xs-6">
+					<input type="text" name="zipcode" class="form-control" placeholder="{% trans "Zipcode" %}" value="{{address.zipcode}}">
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="row">
+				<div class="col-xs-6">
+					<input type="text" name="city" class="form-control" placeholder="{% trans "City" %}" value="{{address.city}}">
+				</div>
+				<div class="col-xs-6">
+					<input type="text" name="phone" class="form-control" placeholder="{% trans "Phone" %}" value="{{cart.user.phone}}">
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<select name="country" class="form-control">
+				{% for country in countries %}
+				<option value="{{country.id}}" {% if country == address.country %}selected{% endif %}>
+					{% trans country.name %}
+				</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="form-group">
+			{% if carriers %}
+			<div class="page-header">
+				<h2>{% trans "Shipping" %}</h2>
+			</div>
+			{% for carrier in carriers %}
+			<div class="radio">
+				<div class="row">
+					<div class="col-xs-4">
+						<label>
+							<input type="radio" name="carrier" value="{{carrier.id}}" {% if cart.carrier %}{% if carriers|length < 2 %}checked{% elif cart.carrier == carrier %}checked{% endif %}{% else %}{% if carrier.default %}checked{% endif %}{% endif %}>
+							{% if carrier.logo %}
+							<img src="{{carrier.logo.url}}" alt="{{carrier.name}}" class="img-responsive">
+							{% else %}
+							<span>{{carrier.name}}</span>
+							{% endif %}
+						</label>
+					</div>
+					<div class="col-xs-4">
+						<span>{{carrier.delivery_text}} {% trans "days" %}</span>
+					</div>
+					<div class="col-xs-4">
+						{% if carrier.carrierpricing_set.all.0 %}
+							{% if carrier.carrierpricing_set.all.0.get_total > 0 %}
+								{% format_price carrier.carrierpricing_set.all.0.get_total %}
+							{% else %}
+								{% trans "Free" %}
+							{% endif %}
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+			{% else %}
+			<p>{% trans "No Carriers Set" %}</p>
+			<div class="alert alert-warning">{% trans "This shop does not ship to that country." %}</div>
+			{% endif %}
+		</div>
+	</form>
+	{% endwith %}
 </div>
 
+
+
+
+<div class="row">
+	<div class="col-sm-12" id="checkout">
+		{% if request.GET.error %}
+		<div class="alert alert-danger">
+			{% if request.GET.error == "card_declined" %}
+			<strong>{% trans "Card Error!" %}</strong> {% trans "Your credit card was declined." %}
+			{% else %}
+			<strong>{% trans "Payment Error!" %}</strong> {% trans "Please make sure your card information is correct." %}
+			{% endif %}
+		</div>
+		{% endif %}
+		{% if errors %}
+			<div class="alert alert-danger">
+				<strong>{% trans "Please fix the errors below before completing your checkout." %}</strong>
+				<ul>
+					{% for error in errors %}
+					<li>{{error}}</li>
+					{% endfor %}
+				</ul>
+			</div>
+		{% endif %}
+		<form id="checkout-form" method="post" action="">
+			{% csrf_token %}
+
+
+			<div id="payment-info" class="form-box">
+				<h2>{% trans "Payment" %}</h2>
+				{% if payments|length > 1 %}
+					{% for key, payment in payments.items reversed %}
+					<div class="form-group">
+						<div class="radio">
+							<label>
+								<div class="row">
+									<div class="col-xs-2">
+										<input type="radio" name="payment-option" value="{{payment.id}}" {% if forloop.counter == 1 %}checked{% endif %}>
+									</div>
+									<div class="col-xs-10">
+										{{payment.label}}
+									</div>
+								</div>
+							</label>
+						</div>
+						{% if payment.get_form %}
+						<div class="payment-form">
+							{% if forloop.counter == 1 %}
+								{{payment.get_form}}
+							{% endif %}
+						</div>
+						{% endif %}
+
+					</div>
+					{% endfor %}
+				{% else %}
+					{% for key, payment in payments.items reversed %}
+						{{payment.get_form}}
+						<input type="hidden" name="payment-option" value="{{payment.id}}">
+					{% endfor %}
+				{% endif %}
+			</div>
+
+			{% if custom_fields %}
+			<div id="extra-info" class="form-box">
+				{% include "lindshop/checkout-extra.html" %}
+			</div>
+			{% endif %}
+
+			<div class="btn-group">
+				<button type="submit" class="btn btn-lg btn-primary btn-checkout">
+					<i class="fa fa-shopping-cart"></i> {% trans "Complete Checkout" %}
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
 
 {% endblock %}

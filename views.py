@@ -11,7 +11,7 @@ class CategoryList(lindshop.views.CategoryList):
 class ProductDetail(lindshop.views.ProductDetail):
 	template_name = "lindshop_frontend/product/product-detail.html"
 
-class CartSummary(lindshop.views.CartSummary):
+class Summary(lindshop.views.CartSummary):
 	template_name = "lindshop_frontend/checkout/summary.html"
 
 class Checkout(lindshop.views.Checkout):

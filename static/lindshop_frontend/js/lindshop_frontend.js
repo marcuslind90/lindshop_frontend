@@ -32,20 +32,21 @@ $('form#add-product').on('submit', function(e){
 // is clicked, it sends the value to the backend and it validates that the voucher is
 // valid, and then adds it to the cart. Also updates the Cart Summary on the Checkout
 // with updated price and information.
-$('.voucher-box .voucher-field button[name="add"]').click(function(e){
+$('button[name="add-voucher"]').click(function(e){
 	e.preventDefault();
 	Lindshop.addVoucher(
 		$('input[name="voucher"]').val(), 
 		// Success callback
 		function(response){
-			$('.voucher-danger').hide();
+			$('.voucher-error').hide();
 			$('input[name="voucher"]').val("");
 
 			updateCart();
+			updateCartSummary();
 		}, 
 		// Error callback
 		function(response) {
-			$('.voucher-danger').text(JSON.parse(response.responseText)).show();
+			$('.voucher-error').text(JSON.parse(response.responseText)).show();
 		}
 	);
 });

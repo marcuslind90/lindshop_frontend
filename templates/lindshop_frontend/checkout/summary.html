@@ -1,0 +1,98 @@
+{% extends "lindshop_frontend/base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+{% load product_tags %}
+
+{% block content %}
+<div class="page-header">
+	<h1>{% trans "Cart Summary" %}</h1>
+</div>
+
+<div class="cart-summary-content">
+{% include "lindshop_frontend/cart/cart-summary.html" with cart_items=cart_items %}
+</div>
+
+<div class="row">
+	<div class="col-sm-offset-8 col-sm-4">
+		<div class="form-group">
+			<div class="input-group">
+				<input type="text" name="voucher" placeholder="{% trans "Gift Card or Voucher" %}" class="form-control">
+				<span class="input-group-btn">
+					<button class="btn btn-default" name="add-voucher">{% trans "Add" %}</button>
+				</span>
+			</div>
+			<div class="alert alert-danger voucher-error" style="display:none;"></div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-6">
+				<label>{% trans "Summary" %}</label>
+			</div>
+			<div class="col-xs-6 text-right">
+				<span>{% format_price cart.get_total "decimals" %}</span>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-6">
+				<label>{% trans "Shipping" %}</label>
+			</div>
+			<div class="col-xs-6 text-right">
+				<span>
+				{% if cart.get_shipping > 0 %}
+					{% format_price cart.get_shipping "decimals" %}
+				{% else %}
+					{% trans "Free Shipping!" %}
+				{% endif %}
+				</span>
+			</div>
+		</div>
+
+		<div class="row">
+			{% if config.checkout_show_vat %}
+			<div class="col-xs-6">
+				<label>{% trans "VAT" %}</label>
+			</div>
+			<div class="col-xs-6 text-right">
+				<span>{% format_price cart.get_total_vat "decimals" %}</span>
+			</div>
+			{% endif %}
+		</div>
+
+		<div class="row">
+			<div class="col-xs-6" {% if not cart.voucher %}style="display:none;"{% endif %}>
+				<label>{% trans "Discount" %}</label>
+			</div>
+			<div class="col-xs-6 text-right" {% if not cart.voucher %}style="display:none;"{% endif %}>
+				<span>-{% format_price cart.get_total_discount "decimals" %}</span>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-6">
+				<label>{% trans "To Pay" %}</label>
+			</div>
+			<div class="col-xs-6 text-right">
+				<span>{% format_price cart.get_to_pay "decimals" %}</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-6 text-left">
+		<a href="{% url "shop:index" %}" class="btn btn-default">
+			<i class="fa fa-angle-double-left"></i> 
+			{% trans "Continue Shopping" %}
+		</a>
+	</div>
+	<div class="col-xs-6 text-right">
+		<a href="{% url "shop:checkout" %}" class="btn btn-primary">
+			{% trans "Continue to Checkout" %}
+			<i class="fa fa-angle-double-right"></i> 
+		</a>
+	</div>
+</div>
+
+
+{% endblock %}
